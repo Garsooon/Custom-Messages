@@ -1,0 +1,6 @@
+Example text, you will have to provide your own blacklist of plain text or REGEX
+Add to blacklist.txt in the "CustoMmessages" folder your plugins folder.
+
+tree
+badword
+(?i)\b(t[e3]st|tr[e3]e|w[o0]rd|bad[a@]pple)\b

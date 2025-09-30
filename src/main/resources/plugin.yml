@@ -1,14 +1,47 @@
-name: Plugin Name
-main: org.garsooon.PLUGINNAME.MainClass
+name: CustomMessages
 version: 1.0
+main: org.garsooon.custommessages.CustomMessages
+author: Garsooon
 
 commands:
-  plugincmd:
-    description:
-    permission:
-    aliases:
+  setjoin:
+    description: Set your custom join message
+    usage: /<command> <message>
+    allias: cjm, sjm, setgreeting
+    permission: custommessages.setjoin
+  setleave:
+    description: Set your custom leave message
+    usage: /<command> <message>
+    allias: clm, slm
+    permission: custommessages.setleave
+  viewmessages:
+    description: View a player's custom messages
+    usage: /<command> <player>
+    allias: vjm, vlm
+    permission: custommessages.admin
+  setplayerjoin:
+    description: Set another player's join message
+    usage: /<command> <player> <message>
+    allias: fcjm
+    permission: custommessages.admin
+  setplayerleave:
+    description: Set another player's leave message
+    usage: /<command> <player> <message>
+    allias: fclm
+    permission: custommessages.admin
+  resetmessages:
+    description: Reset a player's custom messages
+    usage: /<command> <player>
+    allias: rcjm, rclm
+    permission: custommessages.admin
 
 permissions:
-  plugin.use:
-      description:
-      default: true
+  custommessages.setjoin:
+    description: Allows setting custom join message
+    default: op
+  custommessages.setleave:
+    description: Allows setting custom leave message
+    default: op
+  custommessages.admin:
+    description: Allows modifying other players' messages
+    default: op
