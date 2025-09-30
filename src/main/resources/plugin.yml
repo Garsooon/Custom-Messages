@@ -1,0 +1,14 @@
+name: Plugin Name
+main: org.garsooon.PLUGINNAME.MainClass
+version: 1.0
+
+commands:
+  plugincmd:
+    description:
+    permission:
+    aliases:
+
+permissions:
+  plugin.use:
+      description:
+      default: true
