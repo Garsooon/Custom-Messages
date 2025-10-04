@@ -1,5 +1,5 @@
 name: CustomMessages
-version: 1.0
+version: 1.0.1
 main: org.garsooon.custommessages.CustomMessages
 author: Garsooon
 
@@ -7,32 +7,32 @@ commands:
   setjoin:
     description: Set your custom join message
     usage: /<command> <message>
-    allias: cjm, sjm, setgreeting
+    aliases: [cjm, sjm, setgreeting]
     permission: custommessages.setjoin
   setleave:
     description: Set your custom leave message
     usage: /<command> <message>
-    allias: clm, slm
+    aliases: [clm, slm]
     permission: custommessages.setleave
   viewmessages:
     description: View a player's custom messages
     usage: /<command> <player>
-    allias: vjm, vlm
+    aliases: [vjm, vlm]
     permission: custommessages.admin
   setplayerjoin:
     description: Set another player's join message
     usage: /<command> <player> <message>
-    allias: fcjm
+    aliases: [fcjm]
     permission: custommessages.admin
   setplayerleave:
     description: Set another player's leave message
     usage: /<command> <player> <message>
-    allias: fclm
+    aliases: [fclm]
     permission: custommessages.admin
   resetmessages:
     description: Reset a player's custom messages
     usage: /<command> <player>
-    allias: rcjm, rclm
+    aliases: [rcjm, rclm]
     permission: custommessages.admin
 
 permissions:
