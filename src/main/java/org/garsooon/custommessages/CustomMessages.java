@@ -40,9 +40,9 @@ public class CustomMessages extends JavaPlugin {
         loadBlacklist();
 
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Normal, this);
-        pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Normal, this);
-        pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Normal, this);
+        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Highest, this);
+        pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Highest, this);
+        pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Highest, this);
 
         getServer().getLogger().info("[CustomMessages] Plugin enabled!");
     }
