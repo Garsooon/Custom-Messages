@@ -6,12 +6,11 @@
 
     <groupId>org.garsooon</groupId>
     <artifactId>CustomMessages</artifactId>
-    <version>1.0.2</version>
-
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
-    <name>Plugin</name>
-    <description>A plugin</description>
+    <name>CustomeMessages</name>
+    <description>A plugin for Beta 1.7.3 Minecraft, that adds custom player join and leave messages </description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

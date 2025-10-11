@@ -1,5 +1,7 @@
 package org.garsooon.custommessages;
 
+import com.projectposeidon.api.PoseidonUUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -17,6 +19,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.UUID;
 
 public class CustomMessages extends JavaPlugin {
     private Properties messages;
@@ -192,7 +195,7 @@ public class CustomMessages extends JavaPlugin {
         if (!validateMessage(sender, message)) return true;
 
         message = applyDefaultGold(message);
-        setJoinMessage(player.getName(), message);
+        setJoinMessage(player.getUniqueId(), message);
         player.sendMessage(ChatColor.GREEN + "Join message set to: " + ChatColor.WHITE + message.replace("%player%", player.getName()));
         return true;
     }
@@ -219,7 +222,7 @@ public class CustomMessages extends JavaPlugin {
         if (!validateMessage(sender, message)) return true;
 
         message = applyDefaultGold(message);
-        setLeaveMessage(player.getName(), message);
+        setLeaveMessage(player.getUniqueId(), message);
         player.sendMessage(ChatColor.GREEN + "Leave message set to: " + ChatColor.WHITE + message.replace("%player%", player.getName()));
         return true;
     }
@@ -236,6 +239,12 @@ public class CustomMessages extends JavaPlugin {
         }
 
         String targetPlayer = args[0];
+        UUID uuid = PoseidonUUID.getPlayerGracefulUUID(targetPlayer);
+        if (uuid == null) {
+            sender.sendMessage(ChatColor.RED + "Could not find player or UUID for: " + targetPlayer);
+            return true;
+        }
+
         String[] msgArgs = new String[args.length - 1];
         System.arraycopy(args, 1, msgArgs, 0, args.length - 1);
         String message = String.join(" ", msgArgs);
@@ -243,7 +252,7 @@ public class CustomMessages extends JavaPlugin {
         if (!validateMessage(sender, message)) return true;
 
         message = applyDefaultGold(message);
-        setJoinMessage(targetPlayer, message);
+        setJoinMessage(uuid, message);
         sender.sendMessage(ChatColor.GREEN + "Set " + targetPlayer + "'s join message to: " + ChatColor.WHITE + message);
         return true;
     }
@@ -260,6 +269,12 @@ public class CustomMessages extends JavaPlugin {
         }
 
         String targetPlayer = args[0];
+        UUID uuid = PoseidonUUID.getPlayerGracefulUUID(targetPlayer);
+        if (uuid == null) {
+            sender.sendMessage(ChatColor.RED + "Could not find player or UUID for: " + targetPlayer);
+            return true;
+        }
+
         String[] msgArgs = new String[args.length - 1];
         System.arraycopy(args, 1, msgArgs, 0, args.length - 1);
         String message = String.join(" ", msgArgs);
@@ -267,7 +282,7 @@ public class CustomMessages extends JavaPlugin {
         if (!validateMessage(sender, message)) return true;
 
         message = applyDefaultGold(message);
-        setLeaveMessage(targetPlayer, message);
+        setLeaveMessage(uuid, message);
         sender.sendMessage(ChatColor.GREEN + "Set " + targetPlayer + "'s leave message to: " + ChatColor.WHITE + message);
         return true;
     }
@@ -284,8 +299,14 @@ public class CustomMessages extends JavaPlugin {
         }
 
         String targetPlayer = args[0];
-        String joinMsg = getJoinMessage(targetPlayer);
-        String leaveMsg = getLeaveMessage(targetPlayer);
+        UUID uuid = PoseidonUUID.getPlayerGracefulUUID(targetPlayer);
+        if (uuid == null) {
+            sender.sendMessage(ChatColor.RED + "Could not find player or UUID for: " + targetPlayer);
+            return true;
+        }
+
+        String joinMsg = getJoinMessage(uuid);
+        String leaveMsg = getLeaveMessage(uuid);
 
         sender.sendMessage(ChatColor.GOLD + "=== Messages for " + targetPlayer + " ===");
         sender.sendMessage(ChatColor.YELLOW + "Join: " + ChatColor.WHITE +
@@ -307,34 +328,50 @@ public class CustomMessages extends JavaPlugin {
         }
 
         String targetPlayer = args[0];
-        messages.remove(targetPlayer + ".join");
-        messages.remove(targetPlayer + ".leave");
+        UUID uuid = PoseidonUUID.getPlayerGracefulUUID(targetPlayer);
+        if (uuid == null) {
+            sender.sendMessage(ChatColor.RED + "Could not find player or UUID for: " + targetPlayer);
+            return true;
+        }
+
+        messages.remove(uuid.toString() + ".join");
+        messages.remove(uuid.toString() + ".leave");
         saveMessages();
         sender.sendMessage(ChatColor.GREEN + "Reset messages for " + targetPlayer);
         return true;
     }
 
+    public String getJoinMessage(UUID uuid) {
+        return messages.getProperty(uuid.toString() + ".join");
+    }
 
+    public String getLeaveMessage(UUID uuid) {
+        return messages.getProperty(uuid.toString() + ".leave");
+    }
 
+    public void setJoinMessage(UUID uuid, String message) {
+        messages.setProperty(uuid.toString() + ".join", message);
+        saveMessages();
+    }
+
+    public void setLeaveMessage(UUID uuid, String message) {
+        messages.setProperty(uuid.toString() + ".leave", message);
+        saveMessages();
+    }
+
+    @Deprecated
     public String getJoinMessage(String playerName) {
-        return messages.getProperty(playerName + ".join");
+        UUID uuid = PoseidonUUID.getPlayerGracefulUUID(playerName);
+        if (uuid != null) return getJoinMessage(uuid);
+        return null;
     }
 
+    @Deprecated
     public String getLeaveMessage(String playerName) {
-        return messages.getProperty(playerName + ".leave");
+        UUID uuid = PoseidonUUID.getPlayerGracefulUUID(playerName);
+        if (uuid != null) return getLeaveMessage(uuid);
+        return null;
     }
-
-    public void setJoinMessage(String playerName, String message) {
-        messages.setProperty(playerName + ".join", message);
-        saveMessages();
-    }
-
-    public void setLeaveMessage(String playerName, String message) {
-        messages.setProperty(playerName + ".leave", message);
-        saveMessages();
-    }
-
-
 
     private void loadMessages() {
         if (!messagesFile.exists()) {
@@ -396,8 +433,7 @@ public class CustomMessages extends JavaPlugin {
         @Override
         public void onPlayerJoin(PlayerJoinEvent event) {
             Player player = event.getPlayer();
-            String customMsg = plugin.getJoinMessage(player.getName());
-
+            String customMsg = plugin.getJoinMessage(player.getUniqueId());
             if (customMsg != null) {
                 event.setJoinMessage(plugin.translateColorCodes(
                         customMsg.replace("%player%", player.getName())));
@@ -407,8 +443,7 @@ public class CustomMessages extends JavaPlugin {
         @Override
         public void onPlayerQuit(PlayerQuitEvent event) {
             Player player = event.getPlayer();
-            String customMsg = plugin.getLeaveMessage(player.getName());
-
+            String customMsg = plugin.getLeaveMessage(player.getUniqueId());
             if (customMsg != null) {
                 event.setQuitMessage(plugin.translateColorCodes(
                         customMsg.replace("%player%", player.getName())));
@@ -418,8 +453,7 @@ public class CustomMessages extends JavaPlugin {
         @Override
         public void onPlayerKick(PlayerKickEvent event) {
             Player player = event.getPlayer();
-            String customMsg = plugin.getLeaveMessage(player.getName());
-
+            String customMsg = plugin.getLeaveMessage(player.getUniqueId());
             if (customMsg != null && !event.isCancelled()) {
                 event.setLeaveMessage(plugin.translateColorCodes(
                         customMsg.replace("%player%", player.getName())));
